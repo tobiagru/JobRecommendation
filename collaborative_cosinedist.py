@@ -2,11 +2,8 @@ from sklearn.metrics.pairwise import cosine_similarity
 from scipy import sparse
 import numpy as np
 import math
-
-#construct user - job list with time spent on page 
-# drop outs are filtered out by a time cutoff of around 5min
-# turn the values into log discrete values from 0-15 (uint4) for easier compute
-# matrix will be sparse
+import logging
+logger = logging.getLogger(__name__)
 
 def predict_most_similar(visits, num_users, num_jobs, UserJobs, k=20, cut_off=300, log_discrete=True, epsilon=1e-9):
     """
@@ -47,11 +44,11 @@ def predict_most_similar(visits, num_users, num_jobs, UserJobs, k=20, cut_off=30
                 return int(val / cut_off * 255)
         
         M_t[visit.user_id, visit.job_id] = calc_time(visit.duration)
-    print("M_t took {} ms".format((datetime.now() - tic).microseconds))
+    logger.debug("M_t took {} ms".format((datetime.now() - tic).microseconds))
         
     tic = datetime.now()
     M_s = cosine_similarity(M_t, M_t, dense_output=False)
-    print("M_s took {} ms".format((datetime.now() - tic).microseconds))
+    logger.debug("M_s took {} ms".format((datetime.now() - tic).microseconds))
     
     #row by row to save memory
     #if it is guaranteed that there is a userjob per user and job then
@@ -74,4 +71,4 @@ def predict_most_similar(visits, num_users, num_jobs, UserJobs, k=20, cut_off=30
             else:
                 userjob.similarity_CF = pred[0, job_id]
     
-    print("Prediction took {} ms".format((datetime.now() - tic).microseconds))
+    logger.debug("Prediction took {} ms".format((datetime.now() - tic).microseconds))
