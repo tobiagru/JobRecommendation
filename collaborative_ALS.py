@@ -6,7 +6,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def predict_most_similar(visits, num_users, num_jobs, UserJobs, cut_off=300, log_discrete=True):
+def predict_most_similar(visits, num_users, num_jobs, UserJobs, factors=50, cut_off=300, log_discrete=True):
     """
     Matrix Factorization based
     
@@ -47,7 +47,7 @@ def predict_most_similar(visits, num_users, num_jobs, UserJobs, cut_off=300, log
     
     tic = datetime.now()
     # initialize a model
-    model = implicit.als.AlternatingLeastSquares(factors=50)
+    model = implicit.als.AlternatingLeastSquares(factors=factors)
     logger.debug("Loading model took {} ms".format((datetime.now() - tic).microseconds))
     
     tic = datetime.now()
